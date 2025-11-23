@@ -1,0 +1,5 @@
+{
+  "name": "ToonPrompt AI",
+  "description": "Transforms text manuscripts into structured webtoon image generation prompts using Gemini.",
+  "requestFramePermissions": []
+}
