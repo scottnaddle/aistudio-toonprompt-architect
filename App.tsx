@@ -14,13 +14,19 @@ const App: React.FC = () => {
   const [prompts, setPrompts] = useState<PromptSet[]>([]);
   const [status, setStatus] = useState<ProcessingStatus>(ProcessingStatus.IDLE);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Track which card is currently generating an image
   const [generatingImages, setGeneratingImages] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const checkKey = async () => {
       try {
+        // Check for local environment variable first
+        if (process.env.API_KEY) {
+          setHasApiKey(true);
+          return;
+        }
+
         if (window.aistudio && await window.aistudio.hasSelectedApiKey()) {
           setHasApiKey(true);
         }
@@ -38,6 +44,8 @@ const App: React.FC = () => {
       await window.aistudio.openSelectKey();
       // Assume success after closing dialog to mitigate race condition
       setHasApiKey(true);
+    } else {
+      alert("API Key selection is only available in AI Studio. Please set GEMINI_API_KEY in .env.local for local development.");
     }
   };
 
@@ -91,7 +99,7 @@ const App: React.FC = () => {
       // If it wasn't a key error, keep the specific image error alert
       const msg = err instanceof Error ? err.message : String(err);
       if (!msg.includes("Requested entity was not found")) {
-         alert("Failed to generate image. Please check the prompt.");
+        alert("Failed to generate image. Please check the prompt.");
       }
     } finally {
       setGeneratingImages(prev => ({ ...prev, [index]: false }));
@@ -111,7 +119,7 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-[#F0F4F8] flex items-center justify-center p-4">
         <div className="bg-white max-w-md w-full p-8 rounded-xl border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
           <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-black">
-             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
           </div>
@@ -140,7 +148,7 @@ const App: React.FC = () => {
       <header className="bg-white border-b-2 border-black sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-             {/* Logo Icon */}
+            {/* Logo Icon */}
             <div className="w-8 h-8 bg-indigo-600 rounded-full border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -158,18 +166,18 @@ const App: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-          
+
           {/* Left Column: Input */}
           <section className="h-auto lg:h-[calc(100vh-8rem)] lg:sticky lg:top-24 flex flex-col">
-            <TextInput 
-              value={manuscript} 
-              onChange={setManuscript} 
+            <TextInput
+              value={manuscript}
+              onChange={setManuscript}
               count={panelCount}
               onCountChange={setPanelCount}
               onSubmit={handleGenerate}
               isLoading={status === ProcessingStatus.PROCESSING}
             />
-            
+
             {/* Context/Instructions */}
             <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl text-sm text-yellow-800">
               <h3 className="font-bold mb-2 flex items-center">
@@ -228,8 +236,8 @@ const App: React.FC = () => {
             {status === ProcessingStatus.SUCCESS && (
               <div className="grid gap-6 animate-fade-in-up">
                 {prompts.map((prompt, index) => (
-                  <PromptCard 
-                    key={index} 
+                  <PromptCard
+                    key={index}
                     data={prompt}
                     onUpdatePrompt={(newText) => handleUpdatePrompt(index, newText)}
                     onGenerateImage={() => handleGenerateImage(index)}
