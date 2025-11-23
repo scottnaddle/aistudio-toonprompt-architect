@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { PromptSet } from '../types';
-import Button from './Button';
+import { PromptSet } from '../types.ts';
+import Button from './Button.tsx';
 
 interface PromptCardProps {
   data: PromptSet;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import TextInput from './components/TextInput';
-import PromptCard from './components/PromptCard';
-import Button from './components/Button';
-import { generateComicPrompts, generateComicImage } from './services/geminiService';
-import { PromptSet, ProcessingStatus } from './types';
+import TextInput from './components/TextInput.tsx';
+import PromptCard from './components/PromptCard.tsx';
+import Button from './components/Button.tsx';
+import { generateComicPrompts, generateComicImage } from './services/geminiService.ts';
+import { PromptSet, ProcessingStatus } from './types.ts';
 
 const App: React.FC = () => {
   const [hasApiKey, setHasApiKey] = useState(false);
