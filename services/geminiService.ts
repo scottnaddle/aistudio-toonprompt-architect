@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
-import { SYSTEM_INSTRUCTION } from "../constants";
-import { PromptSet } from "../types";
+import { SYSTEM_INSTRUCTION } from "../constants.ts";
+import { PromptSet } from "../types.ts";
 
 const responseSchema: Schema = {
   type: Type.ARRAY,
